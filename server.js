@@ -5,13 +5,13 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import Route from './models/route.js';
 import User from './models/user.js';
-import availableVehicles from './models/vehicles.js';
 
 dotenv.config();
 
 const app = express();
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 connectDb();
 
@@ -52,6 +52,11 @@ app.post('/api/set-username', async (req, res) => {
     const { username } = req.body;
 
     try {
+        const existingUser = await User.findOne({ username });
+        if(existingUser) {
+            return res.json({ message: 'Username already exists, using existing username' });
+        }
+
         const user = new User({ username });
         await user.save();
         res.json({ message: 'Username set successfully!' });
@@ -62,13 +67,14 @@ app.post('/api/set-username', async (req, res) => {
 });
 
 // API route to save a route
-app.post('/routes', async (req, res) => {
+app.post('/api/routes', async (req, res) => {
     try {
-        const { username, departureTime, coordinates } = req.body;
-        const route = new Route({ username, departureTime, coordinates });
+        const { username, departureTime, source, destination, sourceCoords, destCoords, points } = req.body;
+        const route = new Route({ username, departureTime, source, destination, sourceCoords, destCoords, points });
         await route.save();
         res.status(201).send('Route saved successfully');
     } catch (error) {
+        console.error('Error saving route:', error);
         res.status(400).send(error.message);
     }
 });

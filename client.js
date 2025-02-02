@@ -441,8 +441,8 @@ async function shareRoute() {
 
         const route = routingControl._selectedRoute;
         const points = route.coordinates.map(coord => ({
-            lat: coord.lat,
-            lng: coord.lng
+            latitude: coord.lat,  // Ensure the field names match the schema
+            longitude: coord.lng  // Ensure the field names match the schema
         }));
 
         const routeData = {
@@ -450,12 +450,18 @@ async function shareRoute() {
             departureTime: departureTime,
             source: source,
             destination: destination,
-            sourceCoords: sourceCoords,
-            destCoords: destCoords,
+            sourceCoords: {
+                latitude: sourceCoords.lat,
+                longitude: sourceCoords.lng
+            },
+            destCoords: {
+                latitude: destCoords.lat,
+                longitude: destCoords.lng
+            },
             points: points
         };
 
-        fetch('http://localhost:3000/api/routes', {
+        const response = await fetch('http://localhost:3000/api/routes', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -463,7 +469,11 @@ async function shareRoute() {
             body: JSON.stringify(routeData)
         });
 
-        alert('Route shared successfully!');
+        if (response.ok) {
+            alert('Route shared successfully!');
+        } else {
+            alert('Error sharing route. Please try again.');
+        }
     } catch (error) {
         console.error('Error sharing route:', error);
         alert('Error sharing route. Please try again.');
