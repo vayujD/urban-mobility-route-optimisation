@@ -1,0 +1,212 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+    position: relative;
+}
+
+#map {
+    height: 100vh;
+    width: 100%;
+}
+
+.leaflet-marker-icon {
+    width: 30px; /* Adjust icon size */
+    height: 30px;
+}
+
+.top-controls {
+    position: absolute;
+    top: 10px;
+    left: 50px;
+    z-index: 999;
+    display: flex;
+    gap: 10px;
+}
+
+.username-container {
+    background: white;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    display: flex;
+    gap: 5px;
+}
+
+.routes-list {
+    position: relative;
+}
+
+#routes-panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 5px;
+    background: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    width: 300px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.routes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+#route-filter {
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#routes-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.route-item {
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.route-item:hover {
+    background: #e9ecef;
+}
+
+.hidden {
+    display: none;
+}
+
+.bottom-controls {
+    position: absolute;
+    left: 50%;
+    bottom: 30px;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    width: 80%;
+    max-width: 904px;
+}
+
+.location-inputs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.check-point-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+input[type="text"],
+input[type="datetime-local"] {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    flex: 1;
+}
+
+button {
+    padding: 8px 12px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    white-space: nowrap;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+#select-point-btn.selecting {
+    background-color: #dc3545;
+}
+
+#select-point-btn.selecting:hover {
+    background-color: #c82333;
+}
+
+.count-marker {
+    background: none;
+    border: none;
+}
+
+.user-count {
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    border: 2px solid white;
+}
+
+.leaflet-popup-content {
+    margin: 10px;
+    line-height: 1.6;
+}
+
+.leaflet-popup-content strong {
+    color: #4CAF50;
+}
+
+.leaflet-popup-content small {
+    color: #666;
+    display: block;
+    margin-top: 5px;
+    max-width: 200px;
+    word-wrap: break-word;
+}
+
+footer {
+    background-color: #2c3e50;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 999;
+}
