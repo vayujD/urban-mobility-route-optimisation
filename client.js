@@ -226,29 +226,6 @@ async function getCoordinates(locationName) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Find route between source and destination
 async function findRoute() {
     const dialog = document.getElementById('route-dialog');
@@ -289,11 +266,53 @@ async function findRoute() {
             .openPopup();
 
         // Add markers for each stop and display order
+        // console.log(sourceCoords.lat, sourceCoords.lng);
+        // waypoints.forEach((coord, index) => {console.log(waypoints[index].lat, waypoints[index].lng);
+        //     L.marker([coord.lat, coord.lng], { icon: customIcon }).addTo(map)
+        //         .bindPopup(`Stop ${index + 1}: ${stopValues[index]}`)
+        //         .openPopup();
+
+
+        // });
+        // console.log(destCoords.lat, destCoords.lng);
+
+
+
+
+
+
+
+
+        // Create an array to hold all coordinates in order: source → waypoints → destination
+        const allCoords = [sourceCoords, ...waypoints, destCoords];
+
+// Log the entire array
+        console.log("All coordinates:", allCoords);
+
+// Replace existing logging code with this unified array
+        allCoords.forEach((coord, index) => {
+            console.log(`Coordinate ${index + 1}:`, coord.lat, coord.lng);
+        });
+
+// marker code using same loop for waypoints
         waypoints.forEach((coord, index) => {
-            L.marker([coord.lat, coord.lng], { icon: customIcon }).addTo(map)
+            L.marker([coord.lat, coord.lng], { icon: customIcon })
+                .addTo(map)
                 .bindPopup(`Stop ${index + 1}: ${stopValues[index]}`)
                 .openPopup();
         });
+
+
+
+
+
+
+
+
+
+
+
+
 
         // Add routing logic here
         if (routingControl) {
@@ -516,6 +535,8 @@ async function saveVehicleCount() {
         console.error("Error:", error);
     }
 }
+
+
 
 
 
