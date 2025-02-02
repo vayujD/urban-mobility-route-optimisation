@@ -5,6 +5,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import Route from './models/route.js';
 import User from './models/user.js';
+import availableVehicles from './models/vehicles.js';
 
 dotenv.config();
 

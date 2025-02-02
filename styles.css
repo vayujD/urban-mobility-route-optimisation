@@ -34,6 +34,7 @@ main {
     z-index: 999;
     display: flex;
     gap: 10px;
+    height:50px;
 }
 
 .username-container {
@@ -209,4 +210,12 @@ footer {
     bottom: 0;
     width: 100%;
     z-index: 999;
+}
+
+.container {
+    margin-left: 700px;
+}
+
+#vehicleCount {
+    height: 30px;
 }
