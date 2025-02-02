@@ -125,6 +125,4 @@ def genetic_algorithm(destinations, generations, population_size, mutation_rate,
                 best_distance = distance
                 best_route = route
 
-        print(f"Generation {generation + 1}: Best Distance = {best_distance:.2f} km")
-
     return best_route, best_distance

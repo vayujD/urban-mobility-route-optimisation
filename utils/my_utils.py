@@ -1,5 +1,5 @@
 from genetic_algorithm_utils import *
-
+import pandas as pd
 def cluster_data(df, warehouse):
     '''
     This function gives clusters on the basis of 4 directions and segment our input dataframe
@@ -52,7 +52,7 @@ def seperate_cluster(df, cluster_value):
     df: cluster augmented dataframe, cluster_value: cluster number
     returns ----> array of delivery points in respective cluster array
     '''
-    return list(df[df['cluster'] == cluster_value].drop(columns = ['cluster']))
+    return np.array(df[df['cluster'] == cluster_value].drop(columns = ['cluster']))
 
 def seperate_n_cluster(df):
     '''
@@ -64,5 +64,11 @@ def seperate_n_cluster(df):
     for _ in df['cluster'].unique():
         dict[int(_)] = seperate_cluster(df, _)
 
+    return dict
+
+def route_for_clusters(dict_clusters, warehouse):
+    dict = {}
+    for _ in range(1,5):
+        dict[_] = optimal_path(pd.DataFrame(dict_clusters[_]), warehouse)
     return dict
 
