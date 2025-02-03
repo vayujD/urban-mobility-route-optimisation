@@ -226,29 +226,6 @@ async function getCoordinates(locationName) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Find route between source and destination
 async function findRoute() {
     const dialog = document.getElementById('route-dialog');
@@ -289,11 +266,53 @@ async function findRoute() {
             .openPopup();
 
         // Add markers for each stop and display order
+        // console.log(sourceCoords.lat, sourceCoords.lng);
+        // waypoints.forEach((coord, index) => {console.log(waypoints[index].lat, waypoints[index].lng);
+        //     L.marker([coord.lat, coord.lng], { icon: customIcon }).addTo(map)
+        //         .bindPopup(`Stop ${index + 1}: ${stopValues[index]}`)
+        //         .openPopup();
+
+
+        // });
+        // console.log(destCoords.lat, destCoords.lng);
+
+
+
+
+
+
+
+
+        // Create an array to hold all coordinates in order: source → waypoints → destination
+        const allCoords = [sourceCoords, ...waypoints, destCoords];
+
+// Log the entire array
+        console.log("All coordinates:", allCoords);
+
+// Replace existing logging code with this unified array
+        allCoords.forEach((coord, index) => {
+            console.log(`Coordinate ${index + 1}:`, coord.lat, coord.lng);
+        });
+
+// marker code using same loop for waypoints
         waypoints.forEach((coord, index) => {
-            L.marker([coord.lat, coord.lng], { icon: customIcon }).addTo(map)
+            L.marker([coord.lat, coord.lng], { icon: customIcon })
+                .addTo(map)
                 .bindPopup(`Stop ${index + 1}: ${stopValues[index]}`)
                 .openPopup();
         });
+
+
+
+
+
+
+
+
+
+
+
+
 
         // Add routing logic here
         if (routingControl) {
@@ -415,15 +434,27 @@ async function shareRoute() {
 
     const source = document.getElementById('source').value;
     const destination = document.getElementById('destination').value;
+    const stopPoints = document.getElementById('stops').value.split(',').map(stop => stop.trim());
+
+    console.log('stopPoints:', stopPoints);
 
     try {
         const sourceCoords = await getCoordinates(source);
         const destCoords = await getCoordinates(destination);
+        const stopPointsCoords = await Promise.all(stopPoints.map(async stop => {
+            const coords = await getCoordinates(stop);
+            console.log(`Coordinates for stop points' ${stop}":`, coords);
+            return {
+                latitude: coords.lat,
+                longitude: coords.lng
+            }
+
+        }));
 
         const route = routingControl._selectedRoute;
         const points = route.coordinates.map(coord => ({
-            lat: coord.lat,
-            lng: coord.lng
+            latitude: coord.lat,
+            longitude: coord.lng
         }));
 
         const routeData = {
@@ -431,12 +462,21 @@ async function shareRoute() {
             departureTime: departureTime,
             source: source,
             destination: destination,
-            sourceCoords: sourceCoords,
-            destCoords: destCoords,
+            stopPoints: stopPointsCoords,
+            sourceCoords: {
+                latitude: sourceCoords.lat,
+                longitude: sourceCoords.lng
+            },
+            destCoords: {
+                latitude: destCoords.lat,
+                longitude: destCoords.lng
+            },
             points: points
         };
 
-        fetch('http://localhost:3000/api/routes', {
+        console.log('Route data:', routeData);
+
+        const response = await fetch('http://localhost:3000/api/routes', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -444,7 +484,11 @@ async function shareRoute() {
             body: JSON.stringify(routeData)
         });
 
-        alert('Route shared successfully!');
+        if (response.ok) {
+            alert('Route shared successfully!');
+        } else {
+            alert('Error sharing route. Please try again.');
+        }
     } catch (error) {
         console.error('Error sharing route:', error);
         alert('Error sharing route. Please try again.');
@@ -516,6 +560,8 @@ async function saveVehicleCount() {
         console.error("Error:", error);
     }
 }
+
+
 
 
 

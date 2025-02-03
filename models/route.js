@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const destinationCoordinates = new mongoose.Schema({
+const coordinatesSchema = new mongoose.Schema({
     latitude: {
         type: Number,
         required: true
@@ -13,18 +13,25 @@ const destinationCoordinates = new mongoose.Schema({
 
 const routeSchema = new mongoose.Schema({
     departureTime: {
-        type: Date, 
+        type: Date,
         required: true
     },
     username: {
         type: String,
         required: true
     },
-    availableVehicles: {
-        type: Number,
-        required: true 
+    source: {
+        type: String,
+        requried: true
     },
-    destination: [destinationCoordinates]
+    destination: {
+        type: String,
+        required: true
+    },
+    stopPoints: [coordinatesSchema],
+    sourceCoords: coordinatesSchema,
+    destCoords: coordinatesSchema,
+    // points: [coordinatesSchema]
 });
 
 
