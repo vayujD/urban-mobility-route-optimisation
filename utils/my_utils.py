@@ -1,5 +1,8 @@
 from genetic_algorithm_utils import *
 import pandas as pd
+
+
+
 def cluster_data(df, warehouse):
     '''
     This function gives clusters on the basis of 4 directions and segment our input dataframe
@@ -40,8 +43,6 @@ def optimal_path(df, warehouse):
     best_route, best_distance = genetic_algorithm(destinations, GENERATIONS, POPULATION_SIZE, MUTATION_RATE, distance_matrix= distance_matrix)
 
     best_route_coordinates = [destinations[i] for i in best_route]
-    
-    print(f"Total Distance: {best_distance:.2f} km")
 
     return best_route_coordinates
 
@@ -68,7 +69,16 @@ def seperate_n_cluster(df):
 
 def route_for_clusters(dict_clusters, warehouse):
     dict = {}
-    for _ in range(1,5):
+    for _ in list(dict_clusters.keys()):
         dict[_] = optimal_path(pd.DataFrame(dict_clusters[_]), warehouse)
     return dict
 
+
+def read_json(path):
+    '''
+    Reads json file from database
+    path: path of the json file
+    Returns ----> dataframe
+    '''
+    data = pd.read_json(path)
+    return data
