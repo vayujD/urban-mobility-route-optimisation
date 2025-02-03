@@ -536,190 +536,141 @@ async function saveVehicleCount() {
     }
 }
 
+document.addEventListener("DOMContentLoaded", function () {
+    const weatherBtn = document.getElementById("weather-btn");
+    const weatherDialog = document.getElementById("weather-dialog");
+    const closeDialog = document.querySelector(".close-dialog");
+    const weatherDataContainer = document.getElementById("weather-data-container");
 
-// Weatherstack API configuration
-const WEATHERSTACK_API_KEY = '3507dd49816f40e491f0f81a59295332';
-const WEATHERSTACK_BASE_URL = 'http://api.weatherstack.com';
+    let routingControl; // Ensure this is globally accessible
 
-// Weather-related variables
-let routeWeatherData = null;
-let weatherButton = null;
-
-// Initialize weather components
-function initWeatherComponents() {
-    weatherButton = document.getElementById('weather-btn');
-    const closeBtn = document.querySelector('.close-dialog');
-    const dialog = document.getElementById('weather-dialog');
-
-    weatherButton.addEventListener('click', showWeatherDialog);
-    closeBtn.addEventListener('click', hideWeatherDialog);
-
-    dialog.addEventListener('click', (e) => {
-        if (e.target === dialog) {
-            hideWeatherDialog();
+    // Show the weather button only when a route is found
+    function showWeatherButton() {
+        if (weatherBtn) {
+            weatherBtn.style.display = "block";
         }
-    });
-}
-
-// Fetch weather data for a specific location
-async function getWeatherData(lat, lon) {
-    try {
-        const response = await fetch(
-            `${WEATHERSTACK_BASE_URL}/current` +
-            `?access_key=${WEATHERSTACK_API_KEY}` +
-            `&query=${lat},${lon}` +
-            `&units=m`
-        );
-
-        if (!response.ok) {
-            throw new Error('Weather API request failed');
-        }
-
-        const data = await response.json();
-
-        if (data.error) {
-            throw new Error(data.error.info);
-        }
-
-        return {
-            location: `${data.location.name}, ${data.location.region}`,
-            temperature: data.current.temperature,
-            weather_description: data.current.weather_descriptions[0],
-            weather_icon: data.current.weather_icons[0],
-            wind_speed: data.current.wind_speed,
-            wind_direction: data.current.wind_dir,
-            precipitation: data.current.precip,
-            humidity: data.current.humidity,
-            pressure: data.current.pressure,
-            visibility: data.current.visibility,
-            time: data.location.localtime
-        };
-    } catch (error) {
-        console.error('Error fetching weather data:', error);
-        throw error;
-    }
-}
-
-// Get weather data for the entire route
-async function getRouteWeather() {
-    if (!routingControl) return null;
-
-    const waypoints = routingControl.getWaypoints()
-        .filter(wp => wp.latLng)
-        .map(wp => wp.latLng);
-
-    if (waypoints.length < 2) return null;
-
-    // Get intermediate points along the route
-    const routePoints = getRouteIntermediatePoints(waypoints);
-
-    // Fetch weather data for all points
-    const weatherPromises = routePoints.map(point =>
-        getWeatherData(point.lat, point.lng)
-    );
-
-    try {
-        const weatherData = await Promise.all(weatherPromises);
-        routeWeatherData = weatherData;
-        return weatherData;
-    } catch (error) {
-        console.error('Error fetching route weather:', error);
-        throw error;
-    }
-}
-
-// Get intermediate points along the route
-function getRouteIntermediatePoints(waypoints) {
-    const points = [];
-    const numPoints = Math.min(5, waypoints.length); // Maximum 5 points to avoid API rate limits
-
-    for (let i = 0; i < numPoints; i++) {
-        const index = Math.floor((i * (waypoints.length - 1)) / (numPoints - 1));
-        points.push(waypoints[index]);
     }
 
-    return points;
-}
+    // Fetch Weather Data from WeatherStack
+    async function getWeatherData(lat, lon, time) {
+        const apiKey = "3507dd49816f40e491f0f81a59295332";
+        const url = `https://api.weatherstack.com/current?access_key=${apiKey}&query=${lat},${lon}`;
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
 
-// Show weather dialog
-async function showWeatherDialog() {
-    const dialog = document.getElementById('weather-dialog');
-    const container = document.getElementById('weather-data-container');
-
-    dialog.style.display = 'block';
-    container.innerHTML = '<div class="loading-spinner">Loading weather data...</div>';
-
-    try {
-        const weatherData = await getRouteWeather();
-        if (weatherData) {
-            container.innerHTML = createWeatherTableHTML(weatherData);
-        } else {
-            container.innerHTML = '<p>Please select a valid route first.</p>';
+            if (data && data.current) {
+                return {
+                    temperature: data.current.temperature,
+                    description: data.current.weather_descriptions[0],
+                    windSpeed: data.current.wind_speed,
+                    humidity: data.current.humidity,
+                    icon: data.current.weather_icons[0]
+                };
+            } else {
+                console.error("Invalid WeatherStack response:", data);
+                return null;
+            }
+        } catch (error) {
+            console.error("Error fetching weather data:", error);
+            return null;
         }
-    } catch (error) {
-        container.innerHTML = '<p>Error loading weather data. Please try again.</p>';
     }
-}
 
-// Hide weather dialog
-function hideWeatherDialog() {
-    document.getElementById('weather-dialog').style.display = 'none';
-}
+    // Get weather along the route
+    async function fetchRouteWeather() {
+        if (!routingControl) {
+            alert("No route found. Please find a route first.");
+            return;
+        }
 
-// Create weather table HTML
-function createWeatherTableHTML(weatherData) {
-    return `
-        <table class="weather-table">
-            <thead>
-                <tr>
-                    <th>Location</th>
-                    <th>Time</th>
-                    <th>Temperature</th>
-                    <th>Condition</th>
-                    <th>Wind</th>
-                    <th>Precipitation</th>
-                    <th>Humidity</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${weatherData.map(data => `
-                    <tr>
-                        <td>${data.location}</td>
-                        <td>${formatTime(data.time)}</td>
-                        <td>${data.temperature}°C</td>
-                        <td>
-                            <img src="${data.weather_icon}" class="weather-icon" alt="${data.weather_description}">
-                            ${data.weather_description}
-                        </td>
-                        <td>${data.wind_speed} km/h ${data.wind_direction}</td>
-                        <td>${data.precipitation}mm</td>
-                        <td>${data.humidity}%</td>
-                    </tr>
-                `).join('')}
-            </tbody>
-        </table>
-    `;
-}
+        const waypoints = routingControl.getWaypoints();
+        if (!waypoints || waypoints.length < 2) {
+            alert("Invalid route. Please enter a valid source and destination.");
+            return;
+        }
 
-// Format time helper function
-function formatTime(timeStr) {
-    return new Date(timeStr).toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-}
+        weatherDataContainer.innerHTML = "<p>Fetching weather data...</p>";
 
-// Modify your existing findRoute function to show weather button after route is found
-const originalFindRoute = findRoute;
-findRoute = async function () {
-    await originalFindRoute.call(this);
-    weatherButton.style.display = 'block';
-};
+        let weatherResults = "";
 
-// Initialize weather components when page loads
-document.addEventListener('DOMContentLoaded', () => {
-    initWeatherComponents();
+        for (let i = 0; i < waypoints.length; i++) {
+            if (waypoints[i].latLng) {
+                const lat = waypoints[i].latLng.lat;
+                const lon = waypoints[i].latLng.lng;
+                const weather = await getWeatherData(lat, lon);
+
+                if (weather) {
+                    weatherResults += `
+                        <div class="weather-info">
+                            <h3>Weather at Stop ${i + 1}</h3>
+                            <img src="${weather.icon}" alt="${weather.description}">
+                            <p><strong>Temperature:</strong> ${weather.temperature}°C</p>
+                            <p><strong>Description:</strong> ${weather.description}</p>
+                            <p><strong>Wind Speed:</strong> ${weather.windSpeed} km/h</p>
+                            <p><strong>Humidity:</strong> ${weather.humidity}%</p>
+                        </div>
+                        <hr>
+                    `;
+                } else {
+                    weatherResults += `<p>Weather data unavailable for Stop ${i + 1}.</p><hr>`;
+                }
+            }
+        }
+
+        weatherDataContainer.innerHTML = weatherResults || "<p>No weather data found.</p>";
+        weatherDialog.style.display = "block";
+    }
+
+    // Close Weather Dialog
+    if (closeDialog) {
+        closeDialog.addEventListener("click", function () {
+            weatherDialog.style.display = "none";
+        });
+    }
+
+    // Event Listener for Weather Button
+    if (weatherBtn) {
+        weatherBtn.addEventListener("click", fetchRouteWeather);
+    }
+
+    // Function to initialize routing control
+    function findRoute() {
+        const source = document.getElementById("source").value;
+        const destination = document.getElementById("destination").value;
+        const stopsInput = document.getElementById("stops").value;
+        const stops = stopsInput ? stopsInput.split(",").map(stop => stop.trim()) : [];
+
+        if (!source || !destination) {
+            alert("Please enter both source and destination.");
+            return;
+        }
+
+        if (routingControl) {
+            map.removeControl(routingControl);
+        }
+
+        routingControl = L.Routing.control({
+            waypoints: [
+                L.latLng(26.9124, 75.7873), // Example: Default Jaipur coordinates
+                ...stops.map(stop => L.latLng(26.9124, 75.7873)), // Example: Dummy lat/lng for stops
+                L.latLng(28.7041, 77.1025) // Example: Default Delhi coordinates
+            ],
+            routeWhileDragging: true
+        }).addTo(map);
+
+        routingControl.on("routesfound", function () {
+            showWeatherButton();
+        });
+    }
+
+    // Attach findRoute function to the button (if it exists)
+    const findRouteBtn = document.querySelector(".action-buttons button:nth-child(1)");
+    if (findRouteBtn) {
+        findRouteBtn.addEventListener("click", findRoute);
+    }
 });
+
 
 
 // Set username
