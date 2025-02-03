@@ -79,6 +79,7 @@ app.post('/api/routes', async (req, res) => {
         await route.save();
 
         const scriptResponse = await callPythonScript(route);
+        console.log('Script response:', scriptResponse);
         const ScriptOutput = new ScriptOutput({ routeId: route._id, outputData: scriptResponse });
         await ScriptOutput.save();
 

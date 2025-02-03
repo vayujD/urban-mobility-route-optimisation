@@ -35,7 +35,9 @@ def route_for_each_cluster(data):
 
 if __name__ == '__main__':
     input_data = json.loads(sys.argv[1])
+    print('Input data:', input_data)
     output_data = route_for_each_cluster(input_data)
+    print('Output data:', output_data)
     print(json.dumps(output_data))
 
 
