@@ -26,7 +26,7 @@ main {
 }
 
 .leaflet-marker-icon {
-    width: 30px; /* Adjust icon size */
+    width: 30px;
     height: 30px;
 }
 
