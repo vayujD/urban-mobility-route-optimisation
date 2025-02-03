@@ -464,7 +464,7 @@ async function shareRoute() {
             return {
                 latitude: coords.lat,
                 longitude: coords.lng
-            }
+            };
 
         }));
 
@@ -506,6 +506,8 @@ async function shareRoute() {
             const route = await response.json();
             fetchScriptOutput(route._id);
         } else {
+            const errorText = await response.text();
+            console.log("Error:", errorText);
             alert('Error sharing route. Please try again.');
         }
     } catch (error) {

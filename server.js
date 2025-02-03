@@ -80,8 +80,8 @@ app.post('/api/routes', async (req, res) => {
 
         const scriptResponse = await callPythonScript(route);
         console.log('Script response:', scriptResponse);
-        const ScriptOutput = new ScriptOutput({ routeId: route._id, outputData: scriptResponse });
-        await ScriptOutput.save();
+        const scriptOutput = new ScriptOutput({ routeId: route._id, outputData: scriptResponse });
+        await scriptOutput.save();
 
 
         res.status(201).send('Route saved successfully');
@@ -100,6 +100,7 @@ async function callPythonScript(route) {
         if (stderr) {
             throw new Error(stderr);
         }
+        console.log('Python script stdout:', stdout)
         return JSON.parse(stdout);
     } catch (error) {
         console.error('Error calling python script:', error);
