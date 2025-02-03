@@ -5,6 +5,9 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import Route from './models/route.js';
 import User from './models/user.js';
+import ScriptOutput from './models/scriptOutput.js';
+import { exec } from 'child_process' ;
+import util from 'util';
 
 dotenv.config();
 
@@ -74,9 +77,45 @@ app.post('/api/routes', async (req, res) => {
         console.log('destCoords:', destCoords);
         const route = new Route({ username, departureTime, source, destination, stopPoints, sourceCoords, destCoords, points });
         await route.save();
+
+        const scriptResponse = await callPythonScript(route);
+        const ScriptOutput = new ScriptOutput({ routeId: route._id, outputData: scriptResponse });
+        await ScriptOutput.save();
+
+
         res.status(201).send('Route saved successfully');
     } catch (error) {
         console.error('Error saving route:', error);
         res.status(400).send(error.message);
+    }
+});
+
+
+//to call Python Scipt
+async function callPythonScript(route) {
+    const execPromise = util.promisify(exec);
+    try {
+        const { stdout, stderr } = await execPromise(`python3 ./scripts/scripts.py '${JSON.stringify(route)}'`);
+        if (stderr) {
+            throw new Error(stderr);
+        }
+        return JSON.parse(stdout);
+    } catch (error) {
+        console.error('Error calling python script:', error);
+        throw error;
+    }
+}
+
+// api route to fetch script output
+app.get('/api/script-output/:routeId', async (req, res) => {
+    try {
+        const scriptOutput = await ScriptOutput.findOne({ routeId: req.params.routeId });
+        if (!scriptOutput) {
+            return res.status(404).json({ message: 'Script output not found' });
+        }
+        res.json(scriptOutput);
+    } catch (error) {
+        console.log('Error fetching script output:', error);
+        res.status(500).json({ message: 'Error fetching script output' });
     }
 });

@@ -409,6 +409,23 @@ function showRouteOnMap(route) {
 }
 
 
+//fetch and display the script output
+ async function fetchScriptOutput(routeId) {
+    try {
+        const response = await fetch (`http://localhost:3000/api/script-output/${routeId}`);
+        if(!response.ok) {
+            throw new Error('Error fetching script output');
+        }
+
+        const scriptOutput = await response.json();
+        console.log('Script output:', scriptOutput);
+
+    } catch (error) {
+        console.error('Error fetching script output:', error);
+        alert('Error fetching script output. Please try again.');
+    }
+ }
+
 
 
 
@@ -486,6 +503,8 @@ async function shareRoute() {
 
         if (response.ok) {
             alert('Route shared successfully!');
+            const route = await response.json();
+            fetchScriptOutput(route._id);
         } else {
             alert('Error sharing route. Please try again.');
         }
