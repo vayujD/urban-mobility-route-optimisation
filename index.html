@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://kit.fontawesome.com/4fb651685a.js" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interactive Map</title>
@@ -12,7 +13,6 @@
 
     <script  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script  src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
-
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css">
@@ -46,15 +46,13 @@
                 </div>
                 <div id="routes-container"></div>
             </div>
+
         </div>
-
-
-
-
-
-
-
-
+<div>
+        <button id="weather-btn" class="weather-button" style="display: none;">
+            <i class="fa-solid fa-cloud"></i> Weather Info
+        </button>
+</div>
 
 
     </div>

@@ -15,6 +15,7 @@ let searchRadiusCircle = null;
 
 
 
+
 // Initialize Firebase references
 // const routesRef = firebase.database().ref('routes');
 
@@ -26,10 +27,6 @@ const customIcon = L.icon({
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
 });
-
-
-
-
 
 
 // Initialize map
@@ -45,18 +42,6 @@ function initMap() {
     // Add map click handler
     map.on('click', onMapClick);
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // Toggle point selection mode
@@ -87,11 +72,6 @@ function onMapClick(e) {
 
     togglePointSelection();
 }
-
-
-
-
-
 
 
 // Check users passing through a point
@@ -196,10 +176,10 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     const Δφ = (lat2 - lat1) * Math.PI / 180;
     const Δλ = (lon2 - lon1) * Math.PI / 180;
 
-    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
         Math.cos(φ1) * Math.cos(φ2) *
-        Math.sin(Δλ/2) * Math.sin(Δλ/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     return R * c; // Distance in meters
 }
@@ -223,7 +203,6 @@ async function getCoordinates(locationName) {
         throw error;
     }
 }
-
 
 
 // Find route between source and destination
@@ -258,10 +237,10 @@ async function findRoute() {
         });
 
         // Add markers for source and destination
-        L.marker([sourceCoords.lat, sourceCoords.lng], { icon: customIcon }).addTo(map)
+        L.marker([sourceCoords.lat, sourceCoords.lng], {icon: customIcon}).addTo(map)
             .bindPopup('Source: ' + source)
             .openPopup();
-        L.marker([destCoords.lat, destCoords.lng], { icon: customIcon }).addTo(map)
+        L.marker([destCoords.lat, destCoords.lng], {icon: customIcon}).addTo(map)
             .bindPopup('Destination: ' + destination)
             .openPopup();
 
@@ -277,12 +256,6 @@ async function findRoute() {
         // console.log(destCoords.lat, destCoords.lng);
 
 
-
-
-
-
-
-
         // Create an array to hold all coordinates in order: source → waypoints → destination
         const allCoords = [sourceCoords, ...waypoints, destCoords];
 
@@ -296,22 +269,11 @@ async function findRoute() {
 
 // marker code using same loop for waypoints
         waypoints.forEach((coord, index) => {
-            L.marker([coord.lat, coord.lng], { icon: customIcon })
+            L.marker([coord.lat, coord.lng], {icon: customIcon})
                 .addTo(map)
                 .bindPopup(`Stop ${index + 1}: ${stopValues[index]}`)
                 .openPopup();
         });
-
-
-
-
-
-
-
-
-
-
-
 
 
         // Add routing logic here
@@ -326,7 +288,9 @@ async function findRoute() {
                 L.latLng(destCoords.lat, destCoords.lng)
             ],
             routeWhileDragging: true,
-            createMarker: function() { return null; } // Disable default markers
+            createMarker: function () {
+                return null;
+            } // Disable default markers
         }).addTo(map);
 
     } catch (error) {
@@ -386,6 +350,7 @@ function loadAllRoutes() {
         });
     });
 }
+
 // Show selected route on map
 function showRouteOnMap(route) {
     if (routingControl) {
@@ -410,10 +375,10 @@ function showRouteOnMap(route) {
 
 
 //fetch and display the script output
- async function fetchScriptOutput(routeId) {
+async function fetchScriptOutput(routeId) {
     try {
-        const response = await fetch (`http://localhost:3000/api/script-output/${routeId}`);
-        if(!response.ok) {
+        const response = await fetch(`http://localhost:3000/api/script-output/${routeId}`);
+        if (!response.ok) {
             throw new Error('Error fetching script output');
         }
 
@@ -424,11 +389,7 @@ function showRouteOnMap(route) {
         console.error('Error fetching script output:', error);
         alert('Error fetching script output. Please try again.');
     }
- }
-
-
-
-
+}
 
 
 // Share route with other users
@@ -464,7 +425,7 @@ async function shareRoute() {
             return {
                 latitude: coords.lat,
                 longitude: coords.lng
-            };
+            }
 
         }));
 
@@ -506,8 +467,6 @@ async function shareRoute() {
             const route = await response.json();
             fetchScriptOutput(route._id);
         } else {
-            const errorText = await response.text();
-            console.log("Error:", errorText);
             alert('Error sharing route. Please try again.');
         }
     } catch (error) {
@@ -521,7 +480,7 @@ function getCurrentLocation() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                const { latitude, longitude } = position.coords;
+                const {latitude, longitude} = position.coords;
 
                 if (currentLocationMarker) {
                     map.removeLayer(currentLocationMarker);
@@ -544,11 +503,6 @@ function getCurrentLocation() {
 }
 
 
-
-
-
-
-
 //vechicle count
 async function saveVehicleCount() {
     const availableVehicles = document.getElementById("vehicleCount").value;
@@ -563,8 +517,8 @@ async function saveVehicleCount() {
     try {
         const response = await fetch("/api/vehicles", {
             method: "POST",
-            headers: { "Content-Type": "package/json" },
-            body: JSON.stringify({ count: availableVehicles }),
+            headers: {"Content-Type": "package/json"},
+            body: JSON.stringify({count: availableVehicles}),
         });
 
         const data = await response.json();
@@ -583,14 +537,189 @@ async function saveVehicleCount() {
 }
 
 
+// Weatherstack API configuration
+const WEATHERSTACK_API_KEY = '3507dd49816f40e491f0f81a59295332';
+const WEATHERSTACK_BASE_URL = 'http://api.weatherstack.com';
 
+// Weather-related variables
+let routeWeatherData = null;
+let weatherButton = null;
 
+// Initialize weather components
+function initWeatherComponents() {
+    weatherButton = document.getElementById('weather-btn');
+    const closeBtn = document.querySelector('.close-dialog');
+    const dialog = document.getElementById('weather-dialog');
 
+    weatherButton.addEventListener('click', showWeatherDialog);
+    closeBtn.addEventListener('click', hideWeatherDialog);
 
+    dialog.addEventListener('click', (e) => {
+        if (e.target === dialog) {
+            hideWeatherDialog();
+        }
+    });
+}
 
+// Fetch weather data for a specific location
+async function getWeatherData(lat, lon) {
+    try {
+        const response = await fetch(
+            `${WEATHERSTACK_BASE_URL}/current` +
+            `?access_key=${WEATHERSTACK_API_KEY}` +
+            `&query=${lat},${lon}` +
+            `&units=m`
+        );
 
+        if (!response.ok) {
+            throw new Error('Weather API request failed');
+        }
 
+        const data = await response.json();
 
+        if (data.error) {
+            throw new Error(data.error.info);
+        }
+
+        return {
+            location: `${data.location.name}, ${data.location.region}`,
+            temperature: data.current.temperature,
+            weather_description: data.current.weather_descriptions[0],
+            weather_icon: data.current.weather_icons[0],
+            wind_speed: data.current.wind_speed,
+            wind_direction: data.current.wind_dir,
+            precipitation: data.current.precip,
+            humidity: data.current.humidity,
+            pressure: data.current.pressure,
+            visibility: data.current.visibility,
+            time: data.location.localtime
+        };
+    } catch (error) {
+        console.error('Error fetching weather data:', error);
+        throw error;
+    }
+}
+
+// Get weather data for the entire route
+async function getRouteWeather() {
+    if (!routingControl) return null;
+
+    const waypoints = routingControl.getWaypoints()
+        .filter(wp => wp.latLng)
+        .map(wp => wp.latLng);
+
+    if (waypoints.length < 2) return null;
+
+    // Get intermediate points along the route
+    const routePoints = getRouteIntermediatePoints(waypoints);
+
+    // Fetch weather data for all points
+    const weatherPromises = routePoints.map(point =>
+        getWeatherData(point.lat, point.lng)
+    );
+
+    try {
+        const weatherData = await Promise.all(weatherPromises);
+        routeWeatherData = weatherData;
+        return weatherData;
+    } catch (error) {
+        console.error('Error fetching route weather:', error);
+        throw error;
+    }
+}
+
+// Get intermediate points along the route
+function getRouteIntermediatePoints(waypoints) {
+    const points = [];
+    const numPoints = Math.min(5, waypoints.length); // Maximum 5 points to avoid API rate limits
+
+    for (let i = 0; i < numPoints; i++) {
+        const index = Math.floor((i * (waypoints.length - 1)) / (numPoints - 1));
+        points.push(waypoints[index]);
+    }
+
+    return points;
+}
+
+// Show weather dialog
+async function showWeatherDialog() {
+    const dialog = document.getElementById('weather-dialog');
+    const container = document.getElementById('weather-data-container');
+
+    dialog.style.display = 'block';
+    container.innerHTML = '<div class="loading-spinner">Loading weather data...</div>';
+
+    try {
+        const weatherData = await getRouteWeather();
+        if (weatherData) {
+            container.innerHTML = createWeatherTableHTML(weatherData);
+        } else {
+            container.innerHTML = '<p>Please select a valid route first.</p>';
+        }
+    } catch (error) {
+        container.innerHTML = '<p>Error loading weather data. Please try again.</p>';
+    }
+}
+
+// Hide weather dialog
+function hideWeatherDialog() {
+    document.getElementById('weather-dialog').style.display = 'none';
+}
+
+// Create weather table HTML
+function createWeatherTableHTML(weatherData) {
+    return `
+        <table class="weather-table">
+            <thead>
+                <tr>
+                    <th>Location</th>
+                    <th>Time</th>
+                    <th>Temperature</th>
+                    <th>Condition</th>
+                    <th>Wind</th>
+                    <th>Precipitation</th>
+                    <th>Humidity</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${weatherData.map(data => `
+                    <tr>
+                        <td>${data.location}</td>
+                        <td>${formatTime(data.time)}</td>
+                        <td>${data.temperature}°C</td>
+                        <td>
+                            <img src="${data.weather_icon}" class="weather-icon" alt="${data.weather_description}">
+                            ${data.weather_description}
+                        </td>
+                        <td>${data.wind_speed} km/h ${data.wind_direction}</td>
+                        <td>${data.precipitation}mm</td>
+                        <td>${data.humidity}%</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+}
+
+// Format time helper function
+function formatTime(timeStr) {
+    return new Date(timeStr).toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+// Modify your existing findRoute function to show weather button after route is found
+const originalFindRoute = findRoute;
+findRoute = async function () {
+    await originalFindRoute.call(this);
+    weatherButton.style.display = 'block';
+};
+
+// Initialize weather components when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    initWeatherComponents();
+});
 
 
 // Set username
@@ -604,8 +733,6 @@ function setUsername() {
         alert('Please enter a valid username');
     }
 }
-
-
 
 
 // Initialize map when page loads
