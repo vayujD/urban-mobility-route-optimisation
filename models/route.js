@@ -28,9 +28,10 @@ const routeSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    stopPoints: [coordinatesSchema],
     sourceCoords: coordinatesSchema,
-    destinationCoords: coordinatesSchema,
-    points: [coordinatesSchema]
+    destCoords: coordinatesSchema,
+    // points: [coordinatesSchema]
 });
 
 

@@ -69,8 +69,10 @@ app.post('/api/set-username', async (req, res) => {
 // API route to save a route
 app.post('/api/routes', async (req, res) => {
     try {
-        const { username, departureTime, source, destination, sourceCoords, destCoords, points } = req.body;
-        const route = new Route({ username, departureTime, source, destination, sourceCoords, destCoords, points });
+        const { username, departureTime, source, destination, stopPoints, sourceCoords, destCoords, points } = req.body;
+        console.log('Received route data:', req.body);
+        console.log('destCoords:', destCoords);
+        const route = new Route({ username, departureTime, source, destination, stopPoints, sourceCoords, destCoords, points });
         await route.save();
         res.status(201).send('Route saved successfully');
     } catch (error) {

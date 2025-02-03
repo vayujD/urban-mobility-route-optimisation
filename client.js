@@ -434,15 +434,27 @@ async function shareRoute() {
 
     const source = document.getElementById('source').value;
     const destination = document.getElementById('destination').value;
+    const stopPoints = document.getElementById('stops').value.split(',').map(stop => stop.trim());
+
+    console.log('stopPoints:', stopPoints);
 
     try {
         const sourceCoords = await getCoordinates(source);
         const destCoords = await getCoordinates(destination);
+        const stopPointsCoords = await Promise.all(stopPoints.map(async stop => {
+            const coords = await getCoordinates(stop);
+            console.log(`Coordinates for stop points' ${stop}":`, coords);
+            return {
+                latitude: coords.lat,
+                longitude: coords.lng
+            }
+
+        }));
 
         const route = routingControl._selectedRoute;
         const points = route.coordinates.map(coord => ({
-            latitude: coord.lat,  // Ensure the field names match the schema
-            longitude: coord.lng  // Ensure the field names match the schema
+            latitude: coord.lat,
+            longitude: coord.lng
         }));
 
         const routeData = {
@@ -450,6 +462,7 @@ async function shareRoute() {
             departureTime: departureTime,
             source: source,
             destination: destination,
+            stopPoints: stopPointsCoords,
             sourceCoords: {
                 latitude: sourceCoords.lat,
                 longitude: sourceCoords.lng
@@ -460,6 +473,8 @@ async function shareRoute() {
             },
             points: points
         };
+
+        console.log('Route data:', routeData);
 
         const response = await fetch('http://localhost:3000/api/routes', {
             method: 'POST',
