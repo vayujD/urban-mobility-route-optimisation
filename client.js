@@ -15,6 +15,7 @@ let searchRadiusCircle = null;
 
 
 
+
 // Initialize Firebase references
 // const routesRef = firebase.database().ref('routes');
 
@@ -26,10 +27,6 @@ const customIcon = L.icon({
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
 });
-
-
-
-
 
 
 // Initialize map
@@ -45,18 +42,6 @@ function initMap() {
     // Add map click handler
     map.on('click', onMapClick);
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // Toggle point selection mode
@@ -87,11 +72,6 @@ function onMapClick(e) {
 
     togglePointSelection();
 }
-
-
-
-
-
 
 
 // Check users passing through a point
@@ -196,10 +176,10 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     const Δφ = (lat2 - lat1) * Math.PI / 180;
     const Δλ = (lon2 - lon1) * Math.PI / 180;
 
-    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
         Math.cos(φ1) * Math.cos(φ2) *
-        Math.sin(Δλ/2) * Math.sin(Δλ/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     return R * c; // Distance in meters
 }
@@ -225,7 +205,6 @@ async function getCoordinates(locationName) {
         throw error;
     }
 }
-
 
 
 // Find route between source and destination
@@ -260,10 +239,10 @@ async function findRoute() {
         });
 
         // Add markers for source and destination
-        L.marker([sourceCoords.lat, sourceCoords.lng], { icon: customIcon }).addTo(map)
+        L.marker([sourceCoords.lat, sourceCoords.lng], {icon: customIcon}).addTo(map)
             .bindPopup('Source: ' + source)
             .openPopup();
-        L.marker([destCoords.lat, destCoords.lng], { icon: customIcon }).addTo(map)
+        L.marker([destCoords.lat, destCoords.lng], {icon: customIcon}).addTo(map)
             .bindPopup('Destination: ' + destination)
             .openPopup();
 
@@ -279,12 +258,6 @@ async function findRoute() {
         // console.log(destCoords.lat, destCoords.lng);
 
 
-
-
-
-
-
-
         // Create an array to hold all coordinates in order: source → waypoints → destination
         const allCoords = [sourceCoords, ...waypoints, destCoords];
 
@@ -298,22 +271,11 @@ async function findRoute() {
 
 // marker code using same loop for waypoints
         waypoints.forEach((coord, index) => {
-            L.marker([coord.lat, coord.lng], { icon: customIcon })
+            L.marker([coord.lat, coord.lng], {icon: customIcon})
                 .addTo(map)
                 .bindPopup(`Stop ${index + 1}: ${stopValues[index]}`)
                 .openPopup();
         });
-
-
-
-
-
-
-
-
-
-
-
 
 
         // Add routing logic here
@@ -328,7 +290,9 @@ async function findRoute() {
                 L.latLng(destCoords.lat, destCoords.lng)
             ],
             routeWhileDragging: true,
-            createMarker: function() { return null; } // Disable default markers
+            createMarker: function () {
+                return null;
+            } // Disable default markers
         }).addTo(map);
 
     } catch (error) {
@@ -388,6 +352,7 @@ function loadAllRoutes() {
         });
     });
 }
+
 // Show selected route on map
 function showRouteOnMap(route) {
     if (routingControl) {
@@ -412,10 +377,10 @@ function showRouteOnMap(route) {
 
 
 //fetch and display the script output
- async function fetchScriptOutput(routeId) {
+async function fetchScriptOutput(routeId) {
     try {
-        const response = await fetch (`http://localhost:3000/api/script-output/${routeId}`);
-        if(!response.ok) {
+        const response = await fetch(`http://localhost:3000/api/script-output/${routeId}`);
+        if (!response.ok) {
             throw new Error('Error fetching script output');
         }
 
@@ -426,11 +391,7 @@ function showRouteOnMap(route) {
         console.error('Error fetching script output:', error);
         alert('Error fetching script output. Please try again.');
     }
- }
-
-
-
-
+}
 
 
 // Share route with other users
@@ -530,7 +491,7 @@ function getCurrentLocation() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                const { latitude, longitude } = position.coords;
+                const {latitude, longitude} = position.coords;
 
                 if (currentLocationMarker) {
                     map.removeLayer(currentLocationMarker);
@@ -553,11 +514,6 @@ function getCurrentLocation() {
 }
 
 
-
-
-
-
-
 //vechicle count
 async function saveVehicleCount() {
     const availableVehicles = document.getElementById("vehicleCount").value;
@@ -572,8 +528,8 @@ async function saveVehicleCount() {
     try {
         const response = await fetch("/api/vehicles", {
             method: "POST",
-            headers: { "Content-Type": "package/json" },
-            body: JSON.stringify({ count: availableVehicles }),
+            headers: {"Content-Type": "package/json"},
+            body: JSON.stringify({count: availableVehicles}),
         });
 
         const data = await response.json();
@@ -591,14 +547,140 @@ async function saveVehicleCount() {
     }
 }
 
+document.addEventListener("DOMContentLoaded", function () {
+    const weatherBtn = document.getElementById("weather-btn");
+    const weatherDialog = document.getElementById("weather-dialog");
+    const closeDialog = document.querySelector(".close-dialog");
+    const weatherDataContainer = document.getElementById("weather-data-container");
 
+    let routingControl; // Ensure this is globally accessible
 
+    // Show the weather button only when a route is found
+    function showWeatherButton() {
+        if (weatherBtn) {
+            weatherBtn.style.display = "block";
+        }
+    }
 
+    // Fetch Weather Data from WeatherStack
+    async function getWeatherData(lat, lon, time) {
+        const apiKey = "3507dd49816f40e491f0f81a59295332";
+        const url = `https://api.weatherstack.com/current?access_key=${apiKey}&query=${lat},${lon}`;
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
 
+            if (data && data.current) {
+                return {
+                    temperature: data.current.temperature,
+                    description: data.current.weather_descriptions[0],
+                    windSpeed: data.current.wind_speed,
+                    humidity: data.current.humidity,
+                    icon: data.current.weather_icons[0]
+                };
+            } else {
+                console.error("Invalid WeatherStack response:", data);
+                return null;
+            }
+        } catch (error) {
+            console.error("Error fetching weather data:", error);
+            return null;
+        }
+    }
 
+    // Get weather along the route
+    async function fetchRouteWeather() {
+        if (!routingControl) {
+            alert("No route found. Please find a route first.");
+            return;
+        }
 
+        const waypoints = routingControl.getWaypoints();
+        if (!waypoints || waypoints.length < 2) {
+            alert("Invalid route. Please enter a valid source and destination.");
+            return;
+        }
 
+        weatherDataContainer.innerHTML = "<p>Fetching weather data...</p>";
 
+        let weatherResults = "";
+
+        for (let i = 0; i < waypoints.length; i++) {
+            if (waypoints[i].latLng) {
+                const lat = waypoints[i].latLng.lat;
+                const lon = waypoints[i].latLng.lng;
+                const weather = await getWeatherData(lat, lon);
+
+                if (weather) {
+                    weatherResults += `
+                        <div class="weather-info">
+                            <h3>Weather at Stop ${i + 1}</h3>
+                            <img src="${weather.icon}" alt="${weather.description}">
+                            <p><strong>Temperature:</strong> ${weather.temperature}°C</p>
+                            <p><strong>Description:</strong> ${weather.description}</p>
+                            <p><strong>Wind Speed:</strong> ${weather.windSpeed} km/h</p>
+                            <p><strong>Humidity:</strong> ${weather.humidity}%</p>
+                        </div>
+                        <hr>
+                    `;
+                } else {
+                    weatherResults += `<p>Weather data unavailable for Stop ${i + 1}.</p><hr>`;
+                }
+            }
+        }
+
+        weatherDataContainer.innerHTML = weatherResults || "<p>No weather data found.</p>";
+        weatherDialog.style.display = "block";
+    }
+
+    // Close Weather Dialog
+    if (closeDialog) {
+        closeDialog.addEventListener("click", function () {
+            weatherDialog.style.display = "none";
+        });
+    }
+
+    // Event Listener for Weather Button
+    if (weatherBtn) {
+        weatherBtn.addEventListener("click", fetchRouteWeather);
+    }
+
+    // Function to initialize routing control
+    function findRoute() {
+        const source = document.getElementById("source").value;
+        const destination = document.getElementById("destination").value;
+        const stopsInput = document.getElementById("stops").value;
+        const stops = stopsInput ? stopsInput.split(",").map(stop => stop.trim()) : [];
+
+        if (!source || !destination) {
+            alert("Please enter both source and destination.");
+            return;
+        }
+
+        if (routingControl) {
+            map.removeControl(routingControl);
+        }
+
+        routingControl = L.Routing.control({
+            waypoints: [
+                L.latLng(), // Example: Default Jaipur coordinates
+                ...stops.map(stop => L.latLng()),
+                L.latLng() // Example: Default Delhi coordinates
+            ],
+            routeWhileDragging: true
+        }).addTo(map);
+
+        routingControl.on("routesfound", function () {
+            showWeatherButton();
+        });
+    }
+
+    // Attach findRoute function to the button (if it exists)
+    const findRouteBtn = document.querySelector(".action-buttons button:nth-child(1)");
+    if (findRouteBtn) {
+        findRouteBtn.addEventListener("click", findRoute);
+    }
+});
 
 
 
@@ -613,8 +695,6 @@ function setUsername() {
         alert('Please enter a valid username');
     }
 }
-
-
 
 
 // Initialize map when page loads
