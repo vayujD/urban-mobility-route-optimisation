@@ -3,3 +3,4 @@ numpy
 geopy
 ortools
 matplotlib
+scikit-learn
