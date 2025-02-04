@@ -70,7 +70,7 @@ This project is a web-based urban mobility and route optimization application de
     Ensure you have Python 3 installed. Install any required Python packages for the genetic algorithm script (e.g., `pip install ...`).  A `requirements.txt` file in the `scripts` directory would be helpful. Example:
 
     ```bash
-    pip install -r scripts/requirements.txt
+    pip install -r requirements.txt
     ```
 
 9.  **Run the backend server:**
