@@ -469,7 +469,7 @@ async function shareRoute() {
             body: JSON.stringify(routeData)
         });
 
-        const data = await response.json();
+        // const data = await response.json();
 
         if (response.ok) {
             alert('Route shared successfully!');
