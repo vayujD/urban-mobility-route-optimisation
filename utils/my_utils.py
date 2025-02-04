@@ -1,4 +1,4 @@
-from genetic_algorithm_utils import *
+from utils.genetic_algorithm_utils import *
 import pandas as pd
 
 
