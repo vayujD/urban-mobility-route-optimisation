@@ -73,18 +73,31 @@ app.post('/api/set-username', async (req, res) => {
 app.post('/api/routes', async (req, res) => {
     try {
         const { username, departureTime, source, destination, stopPoints, sourceCoords, destCoords, points } = req.body;
-        console.log('Received route data:', req.body);
-        console.log('destCoords:', destCoords);
+        // console.log('Received route data:', req.body);
+        // console.log('destCoords:', destCoords);
         const route = new Route({ username, departureTime, source, destination, stopPoints, sourceCoords, destCoords, points });
+        console.log('Route:', route);
         await route.save();
 
-        const scriptResponse = await callPythonScript(route);
-        console.log('Script response:', scriptResponse);
-        const scriptOutput = new ScriptOutput({ routeId: route._id, outputData: scriptResponse });
-        await scriptOutput.save();
 
+        try {               
 
-        res.status(201).send('Route saved successfully');
+            const scriptResponse = await callPythonScript(route.toObject());
+            
+            if(scriptResponse) {
+                // console.log('Script response:', scriptResponse);
+                const scriptOutput = new ScriptOutput({ routeId: route._id, outputData: scriptResponse });
+                await scriptOutput.save();
+                res.status(201).send('Route saved successfully');
+            } else {
+                throw new Error ('Python script returned no output');
+            }
+
+        } catch (scriptError) {
+            console.error('Error calling python script:', scriptError);
+            res.status(500).send('Error processing python script');
+        }
+
     } catch (error) {
         console.error('Error saving route:', error);
         res.status(400).send(error.message);
@@ -96,17 +109,21 @@ app.post('/api/routes', async (req, res) => {
 async function callPythonScript(route) {
     const execPromise = util.promisify(exec);
     try {
-        const { stdout, stderr } = await execPromise(`python3 ./scripts/scripts.py '${JSON.stringify(route)}'`);
+        const routeJsonString = JSON.stringify(route);
+        console.log('RouteJSOnStringOutput: ', routeJsonString);
+
+        const { stdout, stderr } = await execPromise(`python3 ./scripts.py '${routeJsonString}'`);
         if (stderr) {
             throw new Error(stderr);
         }
+
         console.log('Python script stdout:', stdout)
         return JSON.parse(stdout);
     } catch (error) {
         console.error('Error calling python script:', error);
         throw error;
     }
-}
+}   
 
 // api route to fetch script output
 app.get('/api/script-output/:routeId', async (req, res) => {

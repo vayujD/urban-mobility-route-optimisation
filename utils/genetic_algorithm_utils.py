@@ -71,6 +71,9 @@ def crossover(parent1, parent2):
     Returns ----> child
     '''
     size = len(parent1)
+    if size < 2:  # Guard for small size
+        return parent1  # No crossover possible, return the parent as-is
+
     start, end = sorted(random.sample(range(size), 2))
     child = [None] * size
     child[start:end] = parent1[start:end]
@@ -89,6 +92,9 @@ def mutate(route, mutation_rate):
     route: route from the route matrix, mutation_rate: integer value
     Returns: Mutated routes
     '''
+    if len(route) < 2:  # Guard for small routes
+        return route  # No mutation possible
+
     if random.random() < mutation_rate:
         i, j = random.sample(range(len(route)), 2)
         route[i], route[j] = route[j], route[i]

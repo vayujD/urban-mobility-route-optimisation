@@ -30,8 +30,9 @@ def optimal_path(df, warehouse):
     df: DataFrame(Only with Latitude and Longitude), warehouse: 2D array of warehouse coordinates
     Returns -----> Array of best route
     '''
-    destinations = np.array(df)
-    warehouse = warehouse
+    destinations = np.array(df).tolist()
+    if len(destinations) < 2:
+        return destinations
 
     # Parameters for the Genetic Algorithm
     POPULATION_SIZE = 50
@@ -39,11 +40,11 @@ def optimal_path(df, warehouse):
     MUTATION_RATE = 0.1
 
     distance_matrix = calculate_distance_matrix(destinations, warehouse)
-
-    best_route, best_distance = genetic_algorithm(destinations, GENERATIONS, POPULATION_SIZE, MUTATION_RATE, distance_matrix= distance_matrix)
+    best_route, best_distance = genetic_algorithm(
+        destinations, GENERATIONS, POPULATION_SIZE, MUTATION_RATE, distance_matrix
+    )
 
     best_route_coordinates = [destinations[i] for i in best_route]
-
     return best_route_coordinates
 
 
@@ -53,7 +54,7 @@ def seperate_cluster(df, cluster_value):
     df: cluster augmented dataframe, cluster_value: cluster number
     returns ----> array of delivery points in respective cluster array
     '''
-    return np.array(df[df['cluster'] == cluster_value].drop(columns = ['cluster']))
+    return np.array(df[df['cluster'] == cluster_value].drop(columns = ['cluster'])).tolist()
 
 def seperate_n_cluster(df):
     '''
@@ -69,8 +70,11 @@ def seperate_n_cluster(df):
 
 def route_for_clusters(dict_clusters, warehouse):
     dict = {}
-    for _ in list(dict_clusters.keys()):
-        dict[_] = optimal_path(pd.DataFrame(dict_clusters[_]), warehouse)
+    for cluster_key, cluster_data in dict_clusters.items():
+        if len(cluster_data) == 0:  # Skip empty clusters
+            print(f"Cluster {cluster_key} is empty, skipping...")
+            continue
+        dict[cluster_key] = optimal_path(pd.DataFrame(cluster_data), warehouse)
     return dict
 
 

@@ -211,7 +211,9 @@ async function getCoordinates(locationName) {
         const data = await response.json();
 
         if (data.length === 0) {
-            throw new Error('Location not found');
+            const errorMessage = `Location "${locationName}" not found. Please check the spelling or try a more general location.`;
+            console.error('Error getting coordinates:', errorMessage);
+            throw new Error(errorMessage);
         }
 
         return {
@@ -458,15 +460,20 @@ async function shareRoute() {
     try {
         const sourceCoords = await getCoordinates(source);
         const destCoords = await getCoordinates(destination);
-        const stopPointsCoords = await Promise.all(stopPoints.map(async stop => {
-            const coords = await getCoordinates(stop);
-            console.log(`Coordinates for stop points' ${stop}":`, coords);
-            return {
-                latitude: coords.lat,
-                longitude: coords.lng
-            };
-
-        }));
+        const stopPointsCoords = [];
+        
+        for (const stop of stopPoints) {
+            try{
+                const coords = await getCoordinates(stop);
+                console.log(`Coordinates for stop points' ${stop}":`, coords);
+                stopPointsCoords.push({
+                    latitude: coords.lat,
+                    longitude: coords.lng
+                });
+            } catch (error) {
+                console.warn(`Skipping invalid stop point "${stop}":`, error.message);
+            }
+            }
 
         const route = routingControl._selectedRoute;
         const points = route.coordinates.map(coord => ({
@@ -492,7 +499,7 @@ async function shareRoute() {
         };
 
         console.log('Route data:', routeData);
-
+        
         const response = await fetch('http://localhost:3000/api/routes', {
             method: 'POST',
             headers: {
@@ -501,18 +508,20 @@ async function shareRoute() {
             body: JSON.stringify(routeData)
         });
 
+        const data = await response.json();
+
         if (response.ok) {
             alert('Route shared successfully!');
-            const route = await response.json();
-            fetchScriptOutput(route._id);
+            // const route = await response.json();
+            // fetchScriptOutput(route._id);
         } else {
-            const errorText = await response.text();
-            console.log("Error:", errorText);
-            alert('Error sharing route. Please try again.');
+            // const errorText = await response.text();
+            // console.log("Error:", errorText);
+            alert(data.message || 'Error sharing route (else error). Please try again.');
         }
     } catch (error) {
-        console.error('Error sharing route:', error);
-        alert('Error sharing route. Please try again.');
+        // console.error('Error in sharing route:', error);
+        alert('Error sharing route (catch error). Please try again.');
     }
 }
 

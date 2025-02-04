@@ -1,11 +1,20 @@
 import sys
 import pandas as pd
 import json
+sys.path.append('/home/asher/urban-mobility-route-optimisation/utils')
 from my_utils import *
 
 #data = read_json(r'F:\tensorflow\test.routes.json')[['sourceCoords', 'destCoords', 'stopPoints']]
 
 def route_for_each_cluster(data):
+
+    #convert json string to python dict
+    if isinstance(data, str):
+        data = json.loads(data)
+    #dict to dataframe
+    df = pd.DataFrame([data])
+    data = df[['sourceCoords', 'destCoords', 'stopPoints']]
+
     ## fetch the source coordinates
     warehouse = list(data['sourceCoords'])
     warehouse = warehouse[0]
@@ -32,15 +41,8 @@ def route_for_each_cluster(data):
     route_for_each_clusters = route_for_clusters(data_clustered, warehouse)
 
     return route_for_each_clusters
-
 if __name__ == '__main__':
     input_data = json.loads(sys.argv[1])
-    print('Input data:', input_data)
     output_data = route_for_each_cluster(input_data)
-    print('Output data:', output_data)
-    print(json.dumps(output_data))
-
-
-
-
-
+    print(json.dumps(output_data, indent=4 ))
+    
