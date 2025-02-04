@@ -652,9 +652,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         routingControl = L.Routing.control({
             waypoints: [
-                L.latLng(26.9124, 75.7873), // Example: Default Jaipur coordinates
-                ...stops.map(stop => L.latLng(26.9124, 75.7873)), // Example: Dummy lat/lng for stops
-                L.latLng(28.7041, 77.1025) // Example: Default Delhi coordinates
+                L.latLng(), // Example: Default Jaipur coordinates
+                ...stops.map(stop => L.latLng()),
+                L.latLng() // Example: Default Delhi coordinates
             ],
             routeWhileDragging: true
         }).addTo(map);
