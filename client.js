@@ -469,7 +469,7 @@ async function shareRoute() {
             body: JSON.stringify(routeData)
         });
 
-        const data = await response.json();
+        // const data = await response.json();
 
         if (response.ok) {
             alert('Route shared successfully!');
@@ -478,7 +478,7 @@ async function shareRoute() {
         } else {
             // const errorText = await response.text();
             // console.log("Error:", errorText);
-            alert(data.message || 'Error sharing route (else error). Please try again.');
+            alert('Error sharing route (else error). Please try again.');
         }
     } catch (error) {
         // console.error('Error in sharing route:', error);
