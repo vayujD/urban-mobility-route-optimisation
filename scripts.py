@@ -1,8 +1,7 @@
 import sys
 import pandas as pd
 import json
-sys.path.append('/home/asher/urban-mobility-route-optimisation/utils')
-from my_utils import *
+from utils.my_utils import *
 
 #data = read_json(r'F:\tensorflow\test.routes.json')[['sourceCoords', 'destCoords', 'stopPoints']]
 

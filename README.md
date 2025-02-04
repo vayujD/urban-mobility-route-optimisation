@@ -59,7 +59,7 @@ This project is a web-based urban mobility and route optimization application de
 
 6.  **Set up MongoDB:**
 
-    Ensure you have MongoDB installed and running.  Replace the MongoDB connection string placeholder in the `.env` file with your actual connection string.  You can use MongoDB Atlas for a cloud-based MongoDB instance.
+    Ensure you have MongoDB installed and running.  Create the MongoDB connection string placeholder in the `.env` as "DB = 'your mongoDB string'" with your actual connection string.  You can use MongoDB Atlas for a cloud-based MongoDB instance.
 
 7.  **Set up Weatherstack API:**
 
