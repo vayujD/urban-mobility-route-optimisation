@@ -461,7 +461,7 @@ async function shareRoute() {
 
         console.log('Route data:', routeData);
         
-        const response = await fetch('http://localhost:3000/api/routes', {
+        const response = await fetch('https://namelessmobility.vercel.app/api/routes', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
