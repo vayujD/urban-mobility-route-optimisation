@@ -18,7 +18,7 @@ let searchRadiusCircle = null;
 // const routesRef = firebase.database().ref('routes');
 
 const CONFIG = {
-  API_URL: "http://localhost:3000/api"
+  API_URL: "https://vayuj.shreshth.tech/api"
 };
 // Custom icon definition
 const customIcon = L.icon({
