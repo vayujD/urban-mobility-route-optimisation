@@ -380,9 +380,7 @@ function showRouteOnMap(route) {
 //fetch and display the script output
 async function fetchScriptOutput(routeId) {
   try {
-    const response = await fetch(
-      `http://localhost:3000/api/script-output/${routeId}`,
-    );
+    const response = await fetch(`${process.env.API_URL}/${routeId}`);
     if (!response.ok) {
       throw new Error("Error fetching script output");
     }
@@ -465,7 +463,7 @@ async function shareRoute() {
 
     console.log("Route data:", routeData);
 
-    const response = await fetch(`http://localhost:3000/api/routes`, {
+    const response = await fetch(`${process.env.API_URL}/routes`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
