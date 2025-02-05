@@ -461,7 +461,7 @@ async function shareRoute() {
 
         console.log('Route data:', routeData);
         
-        const response = await fetch(`http://localhost:3000/api/routes`, {
+        const response = await fetch(`https://namelessmobility.vercel.app//api/routes`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -476,12 +476,12 @@ async function shareRoute() {
             // const route = await response.json();
             // fetchScriptOutput(route._id);
         } else {
-            // const errorText = await response.text();
+            const errorText = await response.text();
             console.log("Error:", errorText);
             alert('Error sharing route (else error). Please try again.');
         }
     } catch (error) {
-        console.log('Error in sharing route:', error);
+        console.error("Catch error:",  errorText);
         alert('Error sharing route (catch error). Please try again.');
     }
 }
