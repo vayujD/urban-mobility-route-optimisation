@@ -481,7 +481,7 @@ async function shareRoute() {
             alert('Error sharing route (else error). Please try again.');
         }
     } catch (error) {
-        console.error('Error in sharing route:', error);
+        console.log('Error in sharing route:', error);
         alert('Error sharing route (catch error). Please try again.');
     }
 }
