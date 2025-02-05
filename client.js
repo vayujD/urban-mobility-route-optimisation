@@ -477,11 +477,11 @@ async function shareRoute() {
             // fetchScriptOutput(route._id);
         } else {
             // const errorText = await response.text();
-            // console.log("Error:", errorText);
+            console.log("Error:", errorText);
             alert('Error sharing route (else error). Please try again.');
         }
     } catch (error) {
-        // console.error('Error in sharing route:', error);
+        console.error('Error in sharing route:', error);
         alert('Error sharing route (catch error). Please try again.');
     }
 }
