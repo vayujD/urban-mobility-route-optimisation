@@ -461,7 +461,7 @@ async function shareRoute() {
 
         console.log('Route data:', routeData);
         
-        const response = await fetch(`http://localhost:${process.env.PORT || 3000 }/api/routes`, {
+        const response = await fetch(`http://localhost:3000/api/routes`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -470,7 +470,7 @@ async function shareRoute() {
         });
 
         // const data = await response.json();
-
+        
         if (response.ok) {
             alert('Route shared successfully!');
             // const route = await response.json();
