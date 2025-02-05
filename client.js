@@ -2,6 +2,7 @@
 // import "leaflet-routing-machine";
 
 // Initialize map and variables
+
 let map;
 let routingControl;
 let currentLocationMarker = null;
@@ -16,6 +17,9 @@ let searchRadiusCircle = null;
 // Initialize Firebase references
 // const routesRef = firebase.database().ref('routes');
 
+const CONFIG = {
+  API_URL: "http://localhost:3000/api"
+};
 // Custom icon definition
 const customIcon = L.icon({
   iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png",
@@ -380,7 +384,7 @@ function showRouteOnMap(route) {
 //fetch and display the script output
 async function fetchScriptOutput(routeId) {
   try {
-    const response = await fetch(`${process.env.API_URL}/${routeId}`);
+    const response = await fetch(`${CONFIG.API_URL}/${routeId}`);
     if (!response.ok) {
       throw new Error("Error fetching script output");
     }
@@ -463,7 +467,7 @@ async function shareRoute() {
 
     console.log("Route data:", routeData);
 
-    const response = await fetch(`${process.env.API_URL}/routes`, {
+    const response = await fetch(`${CONFIG.API_URL}/routes`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
