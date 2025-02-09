@@ -27,7 +27,7 @@ def route_for_each_cluster(data):
     ##fetch the destination points
     points = list(data['stopPoints'])
     points = points[0]
-    dataframe = pd.DataFrame(points).drop(columns= ['_id'])
+    dataframe = pd.DataFrame(points)
     dataframe.columns = ['Lat', 'Lon']
 
     ##clustering the dataframe and augmenting the cluster into the dataframe
